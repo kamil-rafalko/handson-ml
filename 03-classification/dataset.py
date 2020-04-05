@@ -24,6 +24,9 @@ class ShiftDirection(Enum):
 
 from scipy.ndimage.interpolation import shift
 
-def shift_one_pixel_in_direction(image, direction):
-    print(image)
-    return shift(image, direction.value)
+def shift_one_pixel_in_direction(digit, direction):
+    return shift(
+        digit.reshape(28,28), 
+        direction.value
+    ).reshape(28 * 28)
+

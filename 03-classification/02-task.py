@@ -6,38 +6,27 @@ from dataset import *
 
 # %%
 X_train, X_test, y_train, y_test = get_data()
-some_digit = X_train[1000]
-some_digit
-
-# %%
-some_digit_image = some_digit.reshape(28, 28)
-some_digit_image
-
-# %%
-import matplotlib.pyplot as plt
-
-draw_image(some_digit_image)
-
-# %%
-
-right_shifted_image = shift_one_pixel_in_direction(some_digit_image, ShiftDirection.UP)
-draw_image(right_shifted_image)
-
+X_train.shape
 
 # %%
 import numpy as np
 
-# reshape_to_image(X_train[:10])
+X_train_with_shifted = np.copy(X_train)
+y_train_with_shifted = np.copy(y_train)
+for direction in iter(ShiftDirection):
+    X_train_with_shifted = np.append(X_train_with_shifted, np.apply_along_axis(lambda image: shift_one_pixel_in_direction(image, direction), 1, X_train), 0)
+    y_train_with_shifted = np.append(y_train_with_shifted, y_train, 0)
 
-another_digit_image = np.apply_over_axes(
-    lambda image: shift_one_pixel_in_direction(image, ShiftDirection.UP), 
-    np.apply_along_axis(lambda digit: digit.reshape(28, 28), 1, X_train),
-    [1,2]
-)[1001]
+X_train_with_shifted.shape
+
+# %%
+from sklearn.neighbors import KNeighborsClassifier
+
+knn_clf = KNeighborsClassifier(n_neighbors=4, weights="distance", n_jobs=6)
+knn_clf.fit(X_train_with_shifted, y_train_with_shifted)
 
 
-another_digit_image = np.apply_along_axis(lambda digit: digit.reshape(28, 28), 1, X_train)
-another_digit_image.shape
+# another_digit_image = another_digit.reshape(28, 28)
 
 # draw_image(another_digit_image)
 
@@ -52,8 +41,6 @@ another_digit_image.shape
     
 #     shift_one_pixel_in_direction_v(reshape_to_image(X_train), direction)   
 
-# %%
-a = np.arange(12).reshape((4,3))
-a
+
 
 # %%
