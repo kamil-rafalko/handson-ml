@@ -9,6 +9,8 @@ def get_data():
     X_train, X_test, y_train, y_test = X[:60000], X[60000:], y[:60000],  y[60000:]
     return X_train, X_test, y_train, y_test
 
+import matplotlib.pyplot as plt
+
 def draw_image(image):
     plt.imshow(image, cmap="binary")
     plt.axis("off")

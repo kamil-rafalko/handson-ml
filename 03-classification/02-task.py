@@ -22,25 +22,22 @@ X_train_with_shifted.shape
 # %%
 from sklearn.neighbors import KNeighborsClassifier
 
-knn_clf = KNeighborsClassifier(n_neighbors=4, weights="distance", n_jobs=6)
-knn_clf.fit(X_train_with_shifted, y_train_with_shifted)
-
-
-# another_digit_image = another_digit.reshape(28, 28)
-
-# draw_image(another_digit_image)
-
-# another_digit_image_shifted = shift_one_pixel_in_direction(another_digit_image, ShiftDirection.UP)
-
-# draw_image(another_digit_image_shifted)
-
-
-# shift_one_pixel_in_direction_v(reshape_to_image(X_train), ShiftDirection.UP)
-
-# for direction in iter(ShiftDirection):
-    
-#     shift_one_pixel_in_direction_v(reshape_to_image(X_train), direction)   
-
+knn_clf = KNeighborsClassifier(n_jobs=20)
 
 
 # %%
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import GridSearchCV
+
+param_grid = [
+    {"n_neighbors": [4], "weights": ["distance"]}
+]
+
+grid_serach = GridSearchCV(knn_clf, param_grid, cv=5, verbose=3)
+grid_serach.fit(X_train_with_shifted, y_train_with_shifted)
+
+# %%
+grid_serach.best_score_
+
+# %%
+grid_serach.best_params_
