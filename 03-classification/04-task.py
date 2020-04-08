@@ -44,9 +44,62 @@ def load_email(is_spam, filename):
 spam_emails = [load_email(True, name) for name in spam_filenames]
 ham_emails = [load_email(False, name) for name in ham_filenames]
 
-# print(spam_emails[0].get_content().strip())
-spam_filenames[0]
-
 
 # %%
-spam_emails[0].get_content().strip()
+ham_emails[1].get_content().strip()
+
+# %%
+def get_email_structure(email):
+    if isinstance(email, str):
+        return email
+    payload = email.get_payload()
+    if isinstance(payload, list):
+        return "multipart({})".format(", ".join([
+            get_email_structure(sub_email)
+            for sub_email in payload
+        ]))
+    else:
+        return email.get_content_type()
+
+# %%
+from collections import Counter
+
+def structures_counter(emails):
+    structures = Counter()
+    for email in emails:
+        structure = get_email_structure(email)
+        structures[structure] += 1
+    return structures
+
+# %%
+structures_counter(ham_emails).most_common()
+
+# %%
+structures_counter(spam_emails).most_common()
+
+# %%
+for header, value in spam_emails[0].items():
+    print(header, ",", value)
+
+# %%
+spam_emails[0]["Subject"]
+
+# %%
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+X = np.array(ham_emails + spam_emails)
+y = np.array([0] * len(ham_emails) + [1] * len(spam_emails))
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# %%
+import re
+from html import unescape
+
+def html_to_plan_text(html):
+    text = re.sub('<head.*>.*?</head>', '', html, flags=re.M | re.S | re.I)
+    text = re.sub('<a\s.*?>', ' HYPERLINK ', text, flags=re.M | re.S | re.I)
+    text = re.sub('<.*?>', '', text, flags=re.M | re.S)
+    text = re.sub(r'(\s\n)+', '\n', text, flags=re.M | re.S)
+    return unescape(text)
